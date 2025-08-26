@@ -1,34 +1,47 @@
 class Solution {
     public boolean canPartition(int[] nums) {
-        int len=nums.length;
         int sum=0;
-        for(int i=0;i<len;i++)
+
+        //total sum
+        for(int i:nums)
         {
-            sum+=nums[i];
+            sum+=i;
         }
 
+        //agr equal partition nahi hora 
         if(sum%2!=0)
         {
             return false;
         }
-
-        else
+        int target=sum/2;
+        int n=nums.length;
+        boolean dp[][]=new boolean[n+1][target+1];
+        
+        //base case
+        dp[0][0]=true;
+        for(int i=1;i<=n;i++)
         {
-            int find=sum/2;
-            boolean dp[][]=new boolean[len+1][find+1];
-            dp[0][0]=true;
-            for(int i=1;i<=len;i++)
-            {
-                //with any number we can make sum=0
-                dp[i][0]=true;
-                for(int j=1;j<=find;j++)
-                {
-                    dp[i][j] = dp[i - 1][j];
-                    if (j >= nums[i - 1]) {
-                    dp[i][j] = dp[i][j] || dp[i - 1][j - nums[i - 1]];}
-                }
-            }
-            return dp[len][find];
+            dp[i][0]=true;
         }
+        for(int j=1;j<=target;j++)
+        {
+            dp[0][j]=false;
+        }
+
+        //actual filling
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=1;j<=target;j++)
+            {
+                boolean notTake=dp[i-1][j];
+                boolean take=false;
+                if(j>=nums[i-1])
+                {
+                    take=dp[i-1][j-nums[i-1]];
+                }
+                dp[i][j]=(take || notTake);
+            }
+        }
+        return dp[n][target];
     }
 }
